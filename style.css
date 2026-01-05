@@ -840,3 +840,37 @@ h3 {
     border: none;
     text-shadow: none;
 }
+/* --- CALENDAR INTERACTION STATES --- */
+
+/* 1. PAST MODE: Completely Locked */
+#schedule-card.past-mode {
+    opacity: 0.7;
+    pointer-events: none;
+    filter: grayscale(0.5);
+}
+
+/* 2. FUTURE MODE: "Append Only" */
+/* We target the ID (#) instead of the class (.) */
+#schedule-card.future-mode .custom-checkbox {
+    opacity: 0.3;
+    pointer-events: none; /* Disables clicking via CSS */
+    border-color: #333;
+    background-color: #222;
+    cursor: not-allowed;
+}
+
+#schedule-card.future-mode .delete-btn {
+    display: none; /* Hide delete button */
+}
+
+#schedule-card.future-mode .habit-item {
+    cursor: default;
+}
+
+/* 3. Date Selection Visuals */
+.date { cursor: pointer; }
+.date.selected {
+    border: 2px solid #00e676;
+    color: white;
+    font-weight: bold;
+}

@@ -7,6 +7,9 @@
     <title>Habit & Task Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-512.png">
 </head>
 
 <body>
@@ -137,85 +140,85 @@
 
 </html>
 <script>
-        // --- VARIABLES ---
-        const scheduleCard = document.getElementById('schedule-card');
-        const calendarGrid = document.getElementById('calendarGrid');
-        const monthDisplay = document.getElementById('monthDisplay');
-        const habitList = document.getElementById('habitList');
-        const plusBtn = document.querySelector('.plus-btn');
-        
-        const today = new Date();
-        let selectedDate = new Date(); // Tracks which day is open
+    // --- VARIABLES ---
+    const scheduleCard = document.getElementById('schedule-card');
+    const calendarGrid = document.getElementById('calendarGrid');
+    const monthDisplay = document.getElementById('monthDisplay');
+    const habitList = document.getElementById('habitList');
+    const plusBtn = document.querySelector('.plus-btn');
 
-        // --- 1. CALENDAR LOGIC ---
-        function renderCalendar() {
-            const year = today.getFullYear();
-            const month = today.getMonth();
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            
-            monthDisplay.innerText = `${monthNames[month]} ${year}`;
+    const today = new Date();
+    let selectedDate = new Date(); // Tracks which day is open
 
-            const firstDayIndex = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            let paddingDays = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+    // --- 1. CALENDAR LOGIC ---
+    function renderCalendar() {
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-            calendarGrid.innerHTML = ""; 
+        monthDisplay.innerText = `${monthNames[month]} ${year}`;
 
-            // Padding (Empty slots)
-            for(let i=0; i < paddingDays; i++) {
-                calendarGrid.appendChild(document.createElement('span'));
-            }
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        let paddingDays = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
-            // Days
-            for(let i=1; i <= daysInMonth; i++) {
-                const dateBtn = document.createElement('span');
-                dateBtn.innerText = i;
-                dateBtn.classList.add('date');
-                
-                const thisDate = new Date(year, month, i);
+        calendarGrid.innerHTML = "";
 
-                // Highlight Today
-                if(i === today.getDate()) dateBtn.classList.add('active');
-
-                dateBtn.addEventListener('click', () => {
-                    document.querySelectorAll('.date').forEach(d => d.classList.remove('selected'));
-                    dateBtn.classList.add('selected');
-                    updateScheduleMode(thisDate);
-                });
-
-                calendarGrid.appendChild(dateBtn);
-            }
+        // Padding (Empty slots)
+        for (let i = 0; i < paddingDays; i++) {
+            calendarGrid.appendChild(document.createElement('span'));
         }
 
-        // --- 2. MODE SWITCHER (Past/Future/Today) ---
-        function updateScheduleMode(clickedDate) {
-            selectedDate = clickedDate; // Remember the date
-            
-            scheduleCard.classList.remove('past-mode', 'future-mode');
-            
-            const checkDate = new Date(clickedDate).setHours(0,0,0,0);
-            const currentDate = new Date(today).setHours(0,0,0,0);
+        // Days
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dateBtn = document.createElement('span');
+            dateBtn.innerText = i;
+            dateBtn.classList.add('date');
 
-            if (checkDate < currentDate) {
-                // PAST: Locked
-                scheduleCard.classList.add('past-mode');
-            } else if (checkDate > currentDate) {
-                // FUTURE: "Add Only" Mode
-                scheduleCard.classList.add('future-mode');
-            }
+            const thisDate = new Date(year, month, i);
+
+            // Highlight Today
+            if (i === today.getDate()) dateBtn.classList.add('active');
+
+            dateBtn.addEventListener('click', () => {
+                document.querySelectorAll('.date').forEach(d => d.classList.remove('selected'));
+                dateBtn.classList.add('selected');
+                updateScheduleMode(thisDate);
+            });
+
+            calendarGrid.appendChild(dateBtn);
         }
+    }
 
-        // --- 3. ADD NEW HABIT FUNCTION ---
-        plusBtn.addEventListener('click', () => {
-            // Check if we are in PAST mode (cannot add to past)
-            if(scheduleCard.classList.contains('past-mode')) return;
+    // --- 2. MODE SWITCHER (Past/Future/Today) ---
+    function updateScheduleMode(clickedDate) {
+        selectedDate = clickedDate; // Remember the date
 
-            // Create new item HTML
-            const li = document.createElement('li');
-            li.className = 'habit-item';
-            li.setAttribute('draggable', 'false'); // Locked by default
-            
-            li.innerHTML = `
+        scheduleCard.classList.remove('past-mode', 'future-mode');
+
+        const checkDate = new Date(clickedDate).setHours(0, 0, 0, 0);
+        const currentDate = new Date(today).setHours(0, 0, 0, 0);
+
+        if (checkDate < currentDate) {
+            // PAST: Locked
+            scheduleCard.classList.add('past-mode');
+        } else if (checkDate > currentDate) {
+            // FUTURE: "Add Only" Mode
+            scheduleCard.classList.add('future-mode');
+        }
+    }
+
+    // --- 3. ADD NEW HABIT FUNCTION ---
+    plusBtn.addEventListener('click', () => {
+        // Check if we are in PAST mode (cannot add to past)
+        if (scheduleCard.classList.contains('past-mode')) return;
+
+        // Create new item HTML
+        const li = document.createElement('li');
+        li.className = 'habit-item';
+        li.setAttribute('draggable', 'false'); // Locked by default
+
+        li.innerHTML = `
                 <div class="habit-left">
                     <div class="custom-checkbox"></div>
                     <span class="habit-text">New Habit</span>
@@ -225,98 +228,98 @@
                     <span class="delete-btn">×</span>
                 </div>
             `;
-            
-            // Add to list
-            habitList.appendChild(li);
-            
-            // Re-initialize events for the new item
-            initItemEvents(li);
+
+        // Add to list
+        habitList.appendChild(li);
+
+        // Re-initialize events for the new item
+        initItemEvents(li);
+    });
+
+
+    // --- 4. ITEM INTERACTION (Check, Drag, Delete) ---
+    let pressTimer;
+
+    function initItemEvents(habit) {
+        const checkbox = habit.querySelector('.custom-checkbox');
+        const deleteBtn = habit.querySelector('.delete-btn');
+
+        // Toggle Checkbox
+        checkbox.onclick = (e) => {
+            // SECURITY CHECK: If in future mode, STOP immediately.
+            if (scheduleCard.classList.contains('future-mode')) return;
+
+            e.stopPropagation();
+            habit.classList.toggle('checked');
+
+            if (habit.classList.contains('checked')) {
+                checkbox.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            } else {
+                checkbox.innerHTML = '';
+            }
+        };
+
+        // Delete Item
+        deleteBtn.onclick = (e) => {
+            // SECURITY CHECK: If in future mode, STOP.
+            if (scheduleCard.classList.contains('future-mode')) return;
+
+            e.stopPropagation();
+            habit.remove();
+        };
+
+        // Long Press to Drag
+        habit.addEventListener('mousedown', (e) => {
+            // STOP if clicking buttons OR if in Future Mode
+            if (e.target.closest('.delete-btn') ||
+                e.target.closest('.custom-checkbox') ||
+                scheduleCard.classList.contains('future-mode')) return;
+
+            pressTimer = setTimeout(() => {
+                habit.classList.add('unlocked');
+                habit.setAttribute('draggable', 'true');
+            }, 500);
         });
 
+        habit.addEventListener('mouseup', () => clearTimeout(pressTimer));
+        habit.addEventListener('mouseleave', () => clearTimeout(pressTimer));
 
-        // --- 4. ITEM INTERACTION (Check, Drag, Delete) ---
-        let pressTimer;
-
-function initItemEvents(habit) {
-            const checkbox = habit.querySelector('.custom-checkbox');
-            const deleteBtn = habit.querySelector('.delete-btn');
-
-            // Toggle Checkbox
-            checkbox.onclick = (e) => {
-                // SECURITY CHECK: If in future mode, STOP immediately.
-                if(scheduleCard.classList.contains('future-mode')) return;
-
-                e.stopPropagation();
-                habit.classList.toggle('checked');
-                
-                if(habit.classList.contains('checked')){
-                    checkbox.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-                } else {
-                    checkbox.innerHTML = '';
-                }
-            };
-
-            // Delete Item
-            deleteBtn.onclick = (e) => {
-                // SECURITY CHECK: If in future mode, STOP.
-                if(scheduleCard.classList.contains('future-mode')) return;
-                
-                e.stopPropagation();
-                habit.remove();
-            };
-
-            // Long Press to Drag
-            habit.addEventListener('mousedown', (e) => {
-                // STOP if clicking buttons OR if in Future Mode
-                if(e.target.closest('.delete-btn') || 
-                   e.target.closest('.custom-checkbox') || 
-                   scheduleCard.classList.contains('future-mode')) return;
-
-                pressTimer = setTimeout(() => {
-                    habit.classList.add('unlocked');
-                    habit.setAttribute('draggable', 'true');
-                }, 500);
-            });
-
-            habit.addEventListener('mouseup', () => clearTimeout(pressTimer));
-            habit.addEventListener('mouseleave', () => clearTimeout(pressTimer));
-
-            habit.addEventListener('dragstart', (e) => {
-                if(scheduleCard.classList.contains('future-mode')) {
-                    e.preventDefault();
-                    return;
-                }
-                habit.classList.add('dragging');
-                habit.classList.remove('unlocked');
-            });
-
-            habit.addEventListener('dragend', () => {
-                habit.classList.remove('dragging');
-                habit.classList.remove('unlocked');
-                habit.setAttribute('draggable', 'false');
-            });
-        }
-        }
-
-        // Initialize existing items
-        document.querySelectorAll('.habit-item').forEach(initItemEvents);
-
-        // Sorting Engine
-        habitList.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            const draggingItem = document.querySelector('.dragging');
-            if(!draggingItem) return;
-
-            const siblings = [...habitList.querySelectorAll('.habit-item:not(.dragging)')];
-            const nextSiblininitItemEvents(habit)g = siblings.find(sibling => {
-                return e.clientY <= sibling.getBoundingClientRect().top + sibling.getBoundingClientRect().height / 2;
-            });
-            habitList.insertBefore(draggingItem, nextSibling);
+        habit.addEventListener('dragstart', (e) => {
+            if (scheduleCard.classList.contains('future-mode')) {
+                e.preventDefault();
+                return;
+            }
+            habit.classList.add('dragging');
+            habit.classList.remove('unlocked');
         });
 
-        // Start App
-        renderCalendar();
-        // Prevent Right Click
-        document.addEventListener('contextmenu', event => event.preventDefault());
+        habit.addEventListener('dragend', () => {
+            habit.classList.remove('dragging');
+            habit.classList.remove('unlocked');
+            habit.setAttribute('draggable', 'false');
+        });
 
-    </script>
+    }
+
+    // Initialize existing items
+    document.querySelectorAll('.habit-item').forEach(initItemEvents);
+
+    // Sorting Engine
+    habitList.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const draggingItem = document.querySelector('.dragging');
+        if (!draggingItem) return;
+
+        const siblings = [...habitList.querySelectorAll('.habit-item:not(.dragging)')];
+        const nextSibling = siblings.find(sibling => {
+            return e.clientY <= sibling.getBoundingClientRect().top + sibling.getBoundingClientRect().height / 2;
+        });
+        habitList.insertBefore(draggingItem, nextSibling);
+    });
+
+    // Start App
+    renderCalendar();
+    // Prevent Right Click
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+</script>
