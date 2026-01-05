@@ -187,6 +187,13 @@ function renderCalendar() {
             }
         }
 
+        // Manual Override: Neon Green for Jan 1-4, 2026
+        if (year === 2026 && month === 0 && (i >= 1 && i <= 4)) {
+            // Remove potential conflict classes
+            dayDiv.classList.remove('fail', 'neon', 'success', 'perfect');
+            dayDiv.classList.add('neon-highlight');
+        }
+
         if (i === selectedDate.getDate() &&
             month === selectedDate.getMonth() &&
             year === selectedDate.getFullYear()) {
@@ -629,7 +636,11 @@ function updateDailyProgress() {
     const dateKey = selectedDate.toDateString();
 
     const totalHabits = habits.length;
-    const completedHabits = completions[dateKey] ? completions[dateKey].length : 0;
+
+    // FIX: Only count completions for habits that actually exist
+    // This prevents stale IDs (from deletions/migrations) from counting towards progress
+    const validHabitIds = new Set(habits.map(h => h.id));
+    const completedHabits = (completions[dateKey] || []).filter(id => validHabitIds.has(id)).length;
 
     const daysTasks = localTasks[dateKey] || [];
     const totalTasks = daysTasks.length;
@@ -654,11 +665,100 @@ function updateDailyProgress() {
 }
 
 // --- 5. Save & Init ---
+// --- 5. Save & Init ---
 function saveData() {
-    localStorage.setItem('habits', JSON.stringify(habits));
-    localStorage.setItem('completions', JSON.stringify(completions));
-    localStorage.setItem('localTasks', JSON.stringify(localTasks));
+    try {
+        localStorage.setItem('habits', JSON.stringify(habits));
+        localStorage.setItem('completions', JSON.stringify(completions));
+        localStorage.setItem('localTasks', JSON.stringify(localTasks));
+    } catch (e) {
+        console.error("Save failed:", e);
+        // Optional: Alert user if quota exceeded or disabled
+    }
 }
+
+// --- 6. DATA PERSISTENCE (SETTINGS) ---
+const settingsModal = document.getElementById('settingsModal');
+const openSettingsBtn = document.getElementById('openSettingsBtn');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const exportBtn = document.getElementById('exportBtn');
+const triggerImportBtn = document.getElementById('triggerImportBtn');
+const importFile = document.getElementById('importFile');
+
+// Open/Close Settings
+openSettingsBtn.addEventListener('click', () => {
+    settingsModal.classList.add('active');
+});
+
+closeSettingsBtn.addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+});
+
+// EXPORT
+exportBtn.addEventListener('click', () => {
+    const data = {
+        habits: habits,
+        completions: completions,
+        localTasks: localTasks,
+        exportDate: new Date().toISOString()
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "habit_tracker_backup.json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+});
+
+// IMPORT HANDLERS
+triggerImportBtn.addEventListener('click', () => {
+    importFile.click();
+});
+
+importFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        try {
+            const importedData = JSON.parse(event.target.result);
+
+            // Basic Validation
+            if (!importedData.habits || !importedData.completions) {
+                alert("Invalid backup file!");
+                return;
+            }
+
+            if (confirm("This will overwrite your current data. Are you sure?")) {
+                habits = importedData.habits || [];
+                completions = importedData.completions || {};
+                localTasks = importedData.localTasks || {};
+
+                // Migrate IDs if importing old data (safety check)
+                if (habits.length > 0 && typeof habits[0] === 'string') {
+                    habits = habits.map(h => ({ id: generateId(), text: h }));
+                }
+
+                saveData();
+                renderList();
+                updateDailyProgress();
+                renderCalendar();
+                alert("Data restored successfully!");
+                settingsModal.classList.remove('active');
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error parsing file. Please check the file format.");
+        }
+    };
+    reader.readAsText(file);
+    // Reset input so same file can be selected again if needed
+    importFile.value = '';
+});
+
 
 prevBtn.addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
@@ -671,8 +771,13 @@ nextBtn.addEventListener('click', () => {
 
 // --- INITIALIZATION (ANIMATION ON LOAD) ---
 // 1. First, render the grid & list immediately so the user sees the structure.
-renderCalendar();
-renderList();
+// Try to load data again just in case (redundant but safe)
+try {
+    renderCalendar();
+    renderList();
+} catch (e) {
+    console.error("Init render failed", e);
+}
 
 // 2. Set initial progress to 0 to prepare for animation.
 yearBarFill.style.width = '0%';

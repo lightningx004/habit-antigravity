@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <div class="main-container">
-        
+
         <div class="top-bar-card">
             <div class="year-info">
                 <span class="year-label" id="yearLabel">2026 Progress</span>
@@ -22,7 +24,7 @@
         </div>
 
         <div class="dashboard-grid">
-            
+
             <div class="col-left">
                 <div class="card month-card">
                     <h3>Month</h3>
@@ -37,7 +39,7 @@
                         <h2 id="monthYear">JANUARY 2026</h2>
                         <button id="nextMonth">&gt;</button>
                     </div>
-                    
+
                     <div class="weekdays">
                         <div>S</div>
                         <div>M</div>
@@ -72,7 +74,7 @@
                     </div>
 
                     <ul class="habit-list" id="habitList">
-                        </ul>
+                    </ul>
                 </div>
             </div>
 
@@ -82,7 +84,7 @@
     <div class="modal-overlay" id="addHabitModal">
         <div class="modal-card">
             <h3>Add Item</h3>
-            
+
             <div class="input-group">
                 <label>New Habit <small>(Repeats Every Day)</small></label>
                 <input type="text" id="modalHabitInput" placeholder="">
@@ -102,6 +104,35 @@
         </div>
     </div>
 
+    <!-- SETTINGS MODAL -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-card">
+            <h3>Data Settings</h3>
+            <p style="text-align:center; color:#aaa; font-size:0.85rem; margin-bottom:20px;">
+                Backup your data to a file or restore it on another device.
+            </p>
+
+            <div class="input-group">
+                <button id="exportBtn" class="btn-confirm" style="width:100%; margin-bottom:10px;">
+                    Download Backup (Export)
+                </button>
+
+                <button id="triggerImportBtn" class="btn-cancel" style="width:100%;">
+                    Restore from Backup (Import)
+                </button>
+                <input type="file" id="importFile" accept=".json" style="display:none;">
+            </div>
+
+            <div style="width:100%; height:1px; background:#333; margin:20px 0;"></div>
+
+            <button id="closeSettingsBtn" class="btn-cancel" style="width:100%;">Close</button>
+        </div>
+    </div>
+
+    <!-- SETTINGS BUTTON (Fixed Top Right) -->
+    <button id="openSettingsBtn" class="settings-float-btn">⚙️</button>
+
     <script src="script.js"></script>
 </body>
+
 </html>
