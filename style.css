@@ -1,45 +1,78 @@
 :root {
     /* EXACT COLORS */
-    --primary: #00C897; 
-    --danger: #FF1E56; 
-    --orange: #FF6B35; /* New color for streak fire */
-    
+    --primary: #00C897;
+    --danger: #FF1E56;
+    --orange: #FF6B35;
+    /* New color for streak fire */
+
     --bg-body: #0b0b0b;
     --bg-card: #151515;
     --text-white: #ffffff;
     --text-gray: #888888;
-    
-    --glow: 0 0 20px rgba(0, 200, 151, 0.6); 
+
+    --glow: 0 0 20px rgba(0, 200, 151, 0.6);
     --glow-orange: 0 0 15px rgba(255, 107, 53, 0.4);
 }
 
 /* ... (Keep all existing CSS up to .habit-item) ... */
 
-.habit-item { 
-    background: #111; 
-    padding: 15px; 
-    margin-bottom: 10px; 
-    border-radius: 12px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; /* Keeps delete btn on far right */
-    transition: all 0.2s; 
-    border: 1px solid transparent; 
+.habit-item {
+    background: #111;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Keeps delete btn on far right */
+    transition: all 0.2s;
+    border: 1px solid transparent;
 }
-.habit-item:hover { border-color: #333; }
+
+.habit-item:hover {
+    border-color: #333;
+}
 
 /* Wrapper for checkbox and text to keep them grouped */
 .habit-left-group {
     display: flex;
     align-items: center;
-    flex: 1; /* Takes up remaining space */
+    flex: 1;
+    /* Takes up remaining space */
 }
 
-.habit-item input[type="checkbox"] { appearance: none; width: 24px; height: 24px; background: #222; border-radius: 6px; cursor: pointer; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
-.habit-item input[type="checkbox"]:checked { background: var(--primary); box-shadow: var(--glow); }
-.habit-item input[type="checkbox"]:checked::after { content: "✓"; color: #000; font-weight: bold; }
-.habit-text { font-size: 0.95rem; }
-.habit-item.completed .habit-text { color: var(--text-gray); text-decoration: line-through; }
+.habit-item input[type="checkbox"] {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #222;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.habit-item input[type="checkbox"]:checked {
+    background: var(--primary);
+    box-shadow: var(--glow);
+}
+
+.habit-item input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: #000;
+    font-weight: bold;
+}
+
+.habit-text {
+    font-size: 0.95rem;
+}
+
+.habit-item.completed .habit-text {
+    color: var(--text-gray);
+    text-decoration: line-through;
+}
 
 /* --- NEW STREAK INDICATOR STYLES --- */
 .habit-streak {
@@ -48,7 +81,8 @@
     background: #222;
     padding: 6px 12px;
     border-radius: 20px;
-    margin-right: 15px; /* Space between streak and delete btn */
+    margin-right: 15px;
+    /* Space between streak and delete btn */
     border: 1px solid #333;
     box-shadow: var(--glow-orange);
     font-weight: 600;
@@ -68,43 +102,57 @@
     color: var(--text-gray);
     padding: 2px 6px;
     border-radius: 4px;
-    margin-left: auto; /* Pushes badge to the right */
+    margin-left: auto;
+    /* Pushes badge to the right */
     margin-right: 15px;
     border: 1px solid #333;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.delete-btn { color: #444; background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 0 10px; }
-.delete-btn:hover { color: var(--danger); text-shadow: 0 0 8px var(--danger); }
+.delete-btn {
+    color: #444;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0 10px;
+}
+
+.delete-btn:hover {
+    color: var(--danger);
+    text-shadow: 0 0 8px var(--danger);
+}
 
 /* ... (Keep rest of CSS) ... */
 :root {
     /* EXACT COLORS */
-    --primary: #00C897; 
-    --danger: #FF1E56; 
-    
+    --primary: #00C897;
+    --danger: #FF1E56;
+
     --bg-body: #0b0b0b;
     --bg-card: #151515;
     --text-white: #ffffff;
     --text-gray: #888888;
-    
-    --glow: 0 0 20px rgba(0, 200, 151, 0.6); 
+
+    --glow: 0 0 20px rgba(0, 200, 151, 0.6);
 }
 
 @property --progress-deg {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
 }
 
 @property --month-deg {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -116,11 +164,17 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+
+/* --- ADD THIS TO DISABLE TEXT SELECTION --- */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE10+/Edge */
+    user-select: none;         /* Standard */
 }
 
 .main-container {
     width: 100%;
-    max-width: 1250px; 
+    max-width: 1250px;
     height: 90vh;
     display: flex;
     flex-direction: column;
@@ -134,12 +188,22 @@ body {
     border-radius: 15px;
     display: flex;
     align-items: center;
-    gap: 20px; /* Restored gap */
+    gap: 20px;
+    /* Restored gap */
     border: 1px solid #222;
 }
 
-.year-info { min-width: 120px; display: flex; align-items: center; }
-.year-label { font-size: 0.9rem; color: var(--text-gray); white-space: nowrap; }
+.year-info {
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+}
+
+.year-label {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    white-space: nowrap;
+}
 
 .year-progress-track {
     flex-grow: 1;
@@ -158,7 +222,10 @@ body {
     transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.year-percent { font-weight: bold; color: var(--primary); }
+.year-percent {
+    font-weight: bold;
+    color: var(--primary);
+}
 
 /* --- DASHBOARD GRID --- */
 .dashboard-grid {
@@ -182,21 +249,29 @@ body {
     width: 100%;
 }
 
-h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
+h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
 
 /* --- COL 1: Month & Calendar --- */
-.col-left { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 20px; 
+.col-left {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* Month Card */
-.month-card { 
-    flex: 1.8; 
+.month-card {
+    flex: 1.8;
     justify-content: center;
 }
-.month-card h3 { margin-bottom: 15px; font-size: 1.1rem; }
+
+.month-card h3 {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
 
 /* Month Circle Progress */
 .small-circular-progress {
@@ -207,34 +282,48 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 30px rgba(0,200,151,0.25); 
+    box-shadow: 0 0 30px rgba(0, 200, 151, 0.25);
     transition: --month-deg 1.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
+
 .small-circular-progress::before {
     content: "";
     position: absolute;
     width: 80px;
     height: 80px;
-    background: var(--bg-card); 
+    background: var(--bg-card);
     border-radius: 50%;
 }
-.small-progress-value { position: relative; font-size: 1.8rem; font-weight: 700; color: var(--text-white); }
+
+.small-progress-value {
+    position: relative;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-white);
+}
 
 /* Calendar Card */
-.calendar-card { 
-    flex: 4; 
-    justify-content: flex-start; 
-    padding-top: 25px; 
-} 
-
-.calendar-header { 
-    display: flex; 
-    justify-content: space-between; 
-    width: 100%; 
-    align-items: center; 
-    margin-bottom: 25px; 
+.calendar-card {
+    flex: 4;
+    justify-content: flex-start;
+    padding-top: 25px;
 }
-.calendar-header h2 { font-size: 0.95rem; color: var(--primary); margin: 0; letter-spacing: 1px; font-weight: 700; }
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.calendar-header h2 {
+    font-size: 0.95rem;
+    color: var(--primary);
+    margin: 0;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
 
 .calendar-header button {
     background: none;
@@ -256,40 +345,47 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     background: rgba(0, 200, 151, 0.1);
     box-shadow: 0 0 20px var(--primary);
 }
-.calendar-header button:active { transform: scale(0.9); }
 
-.weekdays { 
-    display: grid; 
-    grid-template-columns: repeat(7, 1fr); 
-    width: 100%; 
-    text-align: center; 
-    font-size: 0.75rem; 
-    color: var(--text-gray); 
-    margin-bottom: 10px; 
+.calendar-header button:active {
+    transform: scale(0.9);
 }
 
-.calendar-grid { 
-    display: grid; 
-    grid-template-columns: repeat(7, 1fr); 
-    width: 100%; 
-    gap: 8px; 
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    margin-bottom: 10px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    width: 100%;
+    gap: 8px;
     text-align: center;
 }
 
 /* Day Styling */
-.day { 
-    height: 36px; 
+.day {
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem; 
-    color: var(--text-gray); 
-    border-radius: 8px; 
-    cursor: pointer; 
-    transition: 0.2s; 
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
     background-color: transparent;
 }
-.day:hover { background: #222; color: white; }
+
+.day:hover {
+    background: #222;
+    color: white;
+}
 
 /* Calendar Status Logic */
 .day.success {
@@ -301,9 +397,9 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
 
 .day.perfect {
     background-color: var(--primary);
-    color: #000; 
+    color: #000;
     border: none;
-    box-shadow: 0 0 25px var(--primary), inset 0 0 10px rgba(255,255,255,0.3);
+    box-shadow: 0 0 25px var(--primary), inset 0 0 10px rgba(255, 255, 255, 0.3);
     font-weight: bold;
 }
 
@@ -317,9 +413,9 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
 
 .day.fail.neon {
     background-color: var(--danger);
-    color: #000; 
+    color: #000;
     border: none;
-    box-shadow: 0 0 25px var(--danger), inset 0 0 10px rgba(255,255,255,0.2);
+    box-shadow: 0 0 25px var(--danger), inset 0 0 10px rgba(255, 255, 255, 0.2);
     font-weight: bold;
 }
 
@@ -332,9 +428,9 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
 }
 
 /* --- COL 2: Today Circle --- */
-.today-card { 
-    height: 100%; 
-    background: transparent; 
+.today-card {
+    height: 100%;
+    background: transparent;
     border: none;
     box-shadow: none;
     display: flex;
@@ -343,48 +439,70 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     justify-content: center;
 }
 
-.today-card h3 { 
-    position: relative; 
-    top: auto; 
-    margin: 0 0 30px 0; 
-    text-transform: uppercase; 
-    letter-spacing: 2px; 
-    z-index: 2; 
+.today-card h3 {
+    position: relative;
+    top: auto;
+    margin: 0 0 30px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    z-index: 2;
 }
 
 .large-circular-progress {
-    width: 240px; 
+    width: 240px;
     height: 240px;
     border-radius: 50%;
     background: conic-gradient(var(--primary) var(--progress-deg), #222 0deg);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 35px rgba(0,200,151,0.25);
+    box-shadow: 0 0 35px rgba(0, 200, 151, 0.25);
     position: relative;
     transition: --progress-deg 1.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
+
 .large-circular-progress::before {
     content: "";
     position: absolute;
     width: 210px;
     height: 210px;
-    background: var(--bg-body); 
+    background: var(--bg-body);
     border-radius: 50%;
 }
 
-.inner-circle { position: relative; display: flex; flex-direction: column; align-items: center; }
-.large-progress-value { font-size: 4rem; font-weight: 700; color: var(--text-white); line-height: 1; text-shadow: 0 0 15px rgba(255,255,255,0.6); }
-.fraction-value { color: var(--text-gray); font-size: 1rem; margin-top: 5px; }
+.inner-circle {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.large-progress-value {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--text-white);
+    line-height: 1;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+.fraction-value {
+    color: var(--text-gray);
+    font-size: 1rem;
+    margin-top: 5px;
+}
 
 /* --- COL 3: Habits --- */
-.habits-card { justify-content: flex-start; align-items: stretch; }
-.habits-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 20px; 
-    height: 40px; 
+.habits-card {
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.habits-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    height: 40px;
 }
 
 .header-add-btn {
@@ -408,16 +526,76 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     transform: scale(1.1);
 }
 
-.habit-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; }
-.habit-item { background: #111; padding: 15px; margin-bottom: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; border: 1px solid transparent; }
-.habit-item:hover { border-color: #333; }
-.habit-item input[type="checkbox"] { appearance: none; width: 24px; height: 24px; background: #222; border-radius: 6px; cursor: pointer; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
-.habit-item input[type="checkbox"]:checked { background: var(--primary); box-shadow: var(--glow); }
-.habit-item input[type="checkbox"]:checked::after { content: "✓"; color: #000; font-weight: bold; }
-.habit-text { flex: 1; font-size: 0.95rem; }
-.habit-item.completed .habit-text { color: var(--text-gray); text-decoration: line-through; }
-.delete-btn { color: #444; background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 0 10px; }
-.delete-btn:hover { color: var(--danger); text-shadow: 0 0 8px var(--danger); }
+.habit-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+}
+
+.habit-item {
+    background: #111;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.habit-item:hover {
+    border-color: #333;
+}
+
+.habit-item input[type="checkbox"] {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #222;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.habit-item input[type="checkbox"]:checked {
+    background: var(--primary);
+    box-shadow: var(--glow);
+}
+
+.habit-item input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: #000;
+    font-weight: bold;
+}
+
+.habit-text {
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+.habit-item.completed .habit-text {
+    color: var(--text-gray);
+    text-decoration: line-through;
+}
+
+.delete-btn {
+    color: #444;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0 10px;
+}
+
+.delete-btn:hover {
+    color: var(--danger);
+    text-shadow: 0 0 8px var(--danger);
+}
 
 /* --- MODAL UPDATES --- */
 .modal-overlay {
@@ -426,7 +604,7 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7); 
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -450,17 +628,21 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     max-width: 400px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
     transform: scale(0.9);
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    gap: 15px; 
+    gap: 15px;
 }
 
 .modal-overlay.active .modal-card {
     transform: scale(1);
 }
 
-.modal-card h3 { margin: 0; text-align: center; color: var(--primary); }
+.modal-card h3 {
+    margin: 0;
+    text-align: center;
+    color: var(--primary);
+}
 
 .input-group {
     display: flex;
@@ -482,7 +664,8 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     margin-left: 5px;
 }
 
-#modalHabitInput, #modalTaskInput {
+#modalHabitInput,
+#modalTaskInput {
     background: #222;
     border: 1px solid #333;
     padding: 12px;
@@ -494,14 +677,20 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     transition: 0.2s;
 }
 
-#modalHabitInput:focus, #modalTaskInput:focus {
+#modalHabitInput:focus,
+#modalTaskInput:focus {
     border-color: var(--primary);
     box-shadow: 0 0 10px rgba(0, 200, 151, 0.2);
 }
 
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
 
-.btn-cancel, .btn-confirm {
+.btn-cancel,
+.btn-confirm {
     padding: 10px 20px;
     border-radius: 8px;
     border: none;
@@ -511,11 +700,24 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     transition: 0.2s;
 }
 
-.btn-cancel { background: #333; color: var(--text-gray); }
-.btn-cancel:hover { background: #444; color: white; }
+.btn-cancel {
+    background: #333;
+    color: var(--text-gray);
+}
 
-.btn-confirm { background: var(--primary); color: black; }
-.btn-confirm:hover { box-shadow: 0 0 15px var(--primary); }
+.btn-cancel:hover {
+    background: #444;
+    color: white;
+}
+
+.btn-confirm {
+    background: var(--primary);
+    color: black;
+}
+
+.btn-confirm:hover {
+    box-shadow: 0 0 15px var(--primary);
+}
 
 /* Badges */
 .task-badge {
@@ -533,7 +735,7 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
 /* --- MOBILE RESPONSIVENESS --- */
 @media screen and (max-width: 1000px) {
     body {
-        height: auto; 
+        height: auto;
         align-items: flex-start;
     }
 
@@ -544,7 +746,7 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
     }
 
     .dashboard-grid {
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
         gap: 20px;
     }
 
@@ -560,12 +762,39 @@ h3 { margin: 0 0 15px 0; font-size: 1.2rem; font-weight: 700; }
         width: 220px;
         height: 220px;
     }
+
     .large-circular-progress::before {
         width: 190px;
         height: 190px;
     }
-    
+
     .card {
         padding: 20px;
     }
+}
+
+/* --- DRAG & DROP STYLES --- */
+.habit-ghost {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    /* Let touches pass through to grid to detect position */
+    background: #1a1a1a;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    transform: translate(-50%, -50%) scale(1.05);
+    /* Centered on finger */
+    border: 1px solid var(--primary);
+    opacity: 0.9;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.habit-placeholder {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed #333;
+    border-radius: 12px;
+    margin-bottom: 10px;
 }

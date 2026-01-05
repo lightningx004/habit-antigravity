@@ -16,7 +16,7 @@ const monthText = document.getElementById('monthText');
 const openModalBtn = document.getElementById('openModalBtn');
 const addHabitModal = document.getElementById('addHabitModal');
 const modalHabitInput = document.getElementById('modalHabitInput');
-const modalTaskInput = document.getElementById('modalTaskInput'); 
+const modalTaskInput = document.getElementById('modalTaskInput');
 const confirmAddBtn = document.getElementById('confirmAddBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 
@@ -25,29 +25,52 @@ const yearBarFill = document.getElementById('yearBarFill');
 const yearPercentText = document.getElementById('yearPercent');
 
 // --- State ---
-let currentDate = new Date(); 
-let selectedDate = new Date(); 
+let currentDate = new Date();
+let selectedDate = new Date();
 
-// 1. Global Habits 
+// --- MIGRATION & INIT ---
 let rawHabits = JSON.parse(localStorage.getItem('habits')) || [];
-let habits = [];
-if (rawHabits.length > 0 && typeof rawHabits[0] === 'string') {
-    habits = rawHabits.map(h => ({ text: h }));
-} else {
-    habits = rawHabits;
-}
-
-// 2. Global Habit Completions
 let completions = JSON.parse(localStorage.getItem('completions')) || {};
-// 3. Local Tasks
 let localTasks = JSON.parse(localStorage.getItem('localTasks')) || {};
 
+let habits = [];
+
+// Helper to generate IDs
+function generateId() {
+    return 'h_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// 1. Migrate Habits: String -> Object {id, text}
+if (rawHabits.length > 0) {
+    if (typeof rawHabits[0] === 'string') {
+        // Migration needed
+        console.log("Migrating habits to objects...");
+        habits = rawHabits.map(h => ({ id: generateId(), text: h }));
+
+        // 2. Migrate Completions: Index -> ID
+        console.log("Migrating completions to IDs...");
+        for (const dateKey in completions) {
+            const completedIndices = completions[dateKey];
+            const completedIds = [];
+            completedIndices.forEach(index => {
+                if (habits[index]) {
+                    completedIds.push(habits[index].id);
+                }
+            });
+            completions[dateKey] = completedIds;
+        }
+
+        saveData(); // Save immediately
+    } else {
+        habits = rawHabits;
+    }
+}
 
 // --- HELPER: CHECK IF DATE IS IN PAST ---
 function isDatePast(dateToCheck) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const check = new Date(dateToCheck);
     check.setHours(0, 0, 0, 0);
 
@@ -56,26 +79,26 @@ function isDatePast(dateToCheck) {
 
 
 // --- DYNAMIC STREAK CALCULATOR ---
-function calculateHabitStreak(habitIndex) {
+function calculateHabitStreak(habitId) {
     let streak = 0;
-    let d = new Date(); 
-    d.setHours(0,0,0,0);
-    
+    let d = new Date();
+    d.setHours(0, 0, 0, 0);
+
     let dateKey = d.toDateString();
-    let todayChecked = completions[dateKey] && completions[dateKey].includes(habitIndex);
+    let todayChecked = completions[dateKey] && completions[dateKey].includes(habitId);
 
     if (todayChecked) {
         streak++;
     }
 
     while (true) {
-        d.setDate(d.getDate() - 1); 
+        d.setDate(d.getDate() - 1);
         dateKey = d.toDateString();
-        
-        if (completions[dateKey] && completions[dateKey].includes(habitIndex)) {
+
+        if (completions[dateKey] && completions[dateKey].includes(habitId)) {
             streak++;
         } else {
-            break; 
+            break;
         }
     }
 
@@ -86,7 +109,7 @@ function calculateHabitStreak(habitIndex) {
 // --- 1. Year & Month Progress ---
 function updateTimeProgress() {
     const now = new Date();
-    
+
     // YEAR
     const startYear = new Date(now.getFullYear(), 0, 0);
     const diffYear = now - startYear;
@@ -94,8 +117,8 @@ function updateTimeProgress() {
     const dayOfYear = Math.floor(diffYear / oneDay);
     const isLeap = (now.getFullYear() % 400 === 0) || (now.getFullYear() % 100 !== 0 && now.getFullYear() % 4 === 0);
     const totalDaysYear = isLeap ? 366 : 365;
-    const yearPercent = ((dayOfYear / totalDaysYear) * 100).toFixed(0); 
-    
+    const yearPercent = ((dayOfYear / totalDaysYear) * 100).toFixed(0);
+
     yearPercentText.innerText = `${yearPercent}%`;
     yearBarFill.style.width = `${yearPercent}%`;
 
@@ -113,14 +136,14 @@ function renderCalendar() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
+
     monthYearText.innerText = `${monthNames[month]} ${year}`.toUpperCase();
     calendarGrid.innerHTML = "";
 
     const firstDayIndex = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < firstDayIndex; i++) {
         const emptyDiv = document.createElement('div');
@@ -158,29 +181,23 @@ function renderCalendar() {
             } else if (percentage >= 60) {
                 dayDiv.classList.add('success');
             } else if (percentage === 0) {
-                dayDiv.classList.add('fail', 'neon'); 
+                dayDiv.classList.add('fail', 'neon');
             } else {
                 dayDiv.classList.add('fail');
             }
         }
 
-        // Manual Override: ONLY for January 2026, Day 1 & 2
-        if (year === 2026 && month === 0 && (i === 1 || i === 2)) {
-            dayDiv.classList.remove('fail', 'neon', 'success');
-            dayDiv.classList.add('perfect');
-        }
-
-        if (i === selectedDate.getDate() && 
-            month === selectedDate.getMonth() && 
+        if (i === selectedDate.getDate() &&
+            month === selectedDate.getMonth() &&
             year === selectedDate.getFullYear()) {
             dayDiv.classList.add('selected');
         }
 
         dayDiv.addEventListener('click', () => {
             selectedDate = new Date(year, month, i);
-            renderCalendar(); 
-            renderList();   
-            updateDailyProgress(); 
+            renderCalendar();
+            renderList();
+            updateDailyProgress();
         });
 
         calendarGrid.appendChild(dayDiv);
@@ -190,38 +207,39 @@ function renderCalendar() {
 // --- 3. Render Combined List ---
 function renderList() {
     habitList.innerHTML = "";
-    const dateKey = selectedDate.toDateString(); 
-    const isPast = isDatePast(selectedDate); 
+    const dateKey = selectedDate.toDateString();
+    const isPast = isDatePast(selectedDate);
 
     if (isPast) {
-        openModalBtn.style.display = 'none'; 
+        openModalBtn.style.display = 'none';
     } else {
-        openModalBtn.style.display = 'flex'; 
+        openModalBtn.style.display = 'flex';
     }
-    
+
     const daysTasks = localTasks[dateKey] || [];
-    
+
     if (habits.length === 0 && daysTasks.length === 0) {
         habitList.innerHTML = `<li style="text-align:center; color:#444; padding:20px; list-style:none;">No items for this day</li>`;
         return;
     }
 
     // 1. Render Global Habits
-    habits.forEach((habit, index) => {
+    habits.forEach((habit) => {
         const li = document.createElement('li');
         li.classList.add('habit-item');
-        
-        const isCompleted = completions[dateKey] && completions[dateKey].includes(index);
+        li.dataset.id = habit.id; // For Drag & Drop identifying
+
+        const isCompleted = completions[dateKey] && completions[dateKey].includes(habit.id);
         if (isCompleted) li.classList.add('completed');
 
-        const streakCount = calculateHabitStreak(index);
+        const streakCount = calculateHabitStreak(habit.id);
 
         li.innerHTML = `
             <div class="habit-left-group">
                 <input type="checkbox" 
                     ${isCompleted ? 'checked' : ''} 
                     ${isPast ? 'disabled' : ''} 
-                    onchange="toggleGlobalHabit(${index})"
+                    onchange="toggleGlobalHabit('${habit.id}')"
                     style="${isPast ? 'cursor: not-allowed; opacity: 0.5;' : ''}"
                 >
                 <span class="habit-text">${habit.text}</span>
@@ -232,8 +250,12 @@ function renderList() {
                 <span>${streakCount}</span>
             </div>
 
-            ${!isPast ? `<button class="delete-btn" onclick="deleteGlobalHabit(${index})">×</button>` : ''}
+            ${!isPast ? `<button class="delete-btn" onclick="deleteGlobalHabit('${habit.id}')">×</button>` : ''}
         `;
+
+        // Add Drag Listeners to the LI
+        addDragListeners(li, habit.id);
+
         habitList.appendChild(li);
     });
 
@@ -241,7 +263,8 @@ function renderList() {
     daysTasks.forEach((task, index) => {
         const li = document.createElement('li');
         li.classList.add('habit-item');
-        
+        li.classList.add('local-task-item'); // Distinguish tasks
+
         if (task.completed) li.classList.add('completed');
 
         li.innerHTML = `
@@ -262,6 +285,230 @@ function renderList() {
     });
 }
 
+// --- DRAG AND DROP (Long Press) ---
+let dragTimer = null;
+let draggedItem = null;
+let ghostItem = null;
+let startY = 0;
+let isDragging = false;
+let placeholder = null;
+
+function addDragListeners(li, id) {
+    // Touch Events
+    li.addEventListener('touchstart', (e) => handleTouchStart(e, li), { passive: false });
+    li.addEventListener('touchmove', (e) => handleTouchMove(e), { passive: false });
+    li.addEventListener('touchend', (e) => handleTouchEnd(e));
+
+    // Mouse Events (for testing/desktop)
+    li.addEventListener('mousedown', (e) => handleMouseDown(e, li));
+}
+
+function handleTouchStart(e, item) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+
+    startY = e.touches[0].clientY;
+    draggedItem = item;
+
+    // Long press to start drag
+    dragTimer = setTimeout(() => {
+        startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }, 500);
+}
+
+function handleTouchMove(e) {
+    // If dragging, prevent scroll and move ghost
+    if (isDragging) {
+        e.preventDefault();
+        moveGhost(e.touches[0].clientX, e.touches[0].clientY);
+        checkDropTarget(e.touches[0].clientX, e.touches[0].clientY);
+    } else {
+        // If moved significantly while waiting for long press, cancel it
+        if (Math.abs(e.touches[0].clientY - startY) > 10) {
+            clearTimeout(dragTimer);
+        }
+    }
+}
+
+function handleTouchEnd(e) {
+    clearTimeout(dragTimer);
+    if (isDragging) {
+        endDrag();
+    }
+}
+
+// Mouse Handlers (Simplified for desktop testing)
+function handleMouseDown(e, item) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+    draggedItem = item;
+    dragTimer = setTimeout(() => {
+        startDrag(e.clientX, e.clientY);
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    }, 500);
+}
+
+function handleMouseMove(e) {
+    if (isDragging) {
+        e.preventDefault();
+        moveGhost(e.clientX, e.clientY);
+        checkDropTarget(e.clientX, e.clientY);
+    }
+}
+
+function handleMouseUp() {
+    clearTimeout(dragTimer);
+    if (isDragging) {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        endDrag();
+    }
+}
+
+function startDrag(x, y) {
+    isDragging = true;
+
+    // Vibration feedback
+    if (navigator.vibrate) navigator.vibrate(50);
+
+    // Create Ghost
+    ghostItem = draggedItem.cloneNode(true);
+    ghostItem.classList.add('habit-ghost');
+    ghostItem.style.width = `${draggedItem.offsetWidth}px`;
+    document.body.appendChild(ghostItem);
+
+    // Initial Ghost Position
+    moveGhost(x, y);
+
+    // Create Placeholder
+    placeholder = document.createElement('li');
+    placeholder.classList.add('habit-placeholder');
+    placeholder.style.height = `${draggedItem.offsetHeight}px`;
+    draggedItem.parentNode.insertBefore(placeholder, draggedItem);
+
+    // Hide original but keep in DOM
+    draggedItem.style.display = 'none';
+}
+
+function moveGhost(x, y) {
+    if (!ghostItem) return;
+    ghostItem.style.left = `${x}px`;
+    ghostItem.style.top = `${y}px`;
+}
+
+function checkDropTarget(x, y) {
+    const box = habitList.getBoundingClientRect();
+    // Only sort if within list
+    if (x > box.left && x < box.right && y > box.top && y < box.bottom) {
+
+        const siblings = [...habitList.querySelectorAll('.habit-item:not(.habit-ghost):not(.habit-placeholder)')];
+
+        const nextSibling = siblings.find(sibling => {
+            const rect = sibling.getBoundingClientRect();
+            // Use center point of item for threshold
+            return y < rect.top + rect.height / 2;
+        });
+
+        // Determine if position actually changed
+        const currentNext = placeholder.nextElementSibling;
+        const targetNext = nextSibling || null;
+
+        // Note: nextElementSibling might include non-habit items if we're not careful, 
+        // but here we only have LIs.
+        // We need to check if we are already in the right spot.
+        // If targetNext is same as currentNext, no move needed.
+        if (currentNext !== targetNext) {
+            // --- FLIP ANIMATION START ---
+            const itemsToAnimate = siblings.concat(placeholder);
+            const positions = new Map();
+
+            // 1. Record Old Positions
+            itemsToAnimate.forEach(item => {
+                positions.set(item, item.getBoundingClientRect().top);
+            });
+
+            // 2. Perform DOM Move
+            if (nextSibling) {
+                habitList.insertBefore(placeholder, nextSibling);
+            } else {
+                habitList.appendChild(placeholder);
+            }
+
+            // 3. Invert & Play
+            itemsToAnimate.forEach(item => {
+                const oldTop = positions.get(item);
+                const newTop = item.getBoundingClientRect().top;
+                const delta = oldTop - newTop;
+
+                if (delta !== 0) {
+                    // Invert: fake being at old position
+                    item.style.transform = `translateY(${delta}px)`;
+                    item.style.transition = 'none';
+
+                    // Force Reflow
+                    item.offsetHeight;
+
+                    // Play: animate to new (0) position
+                    requestAnimationFrame(() => {
+                        item.style.transform = '';
+                        item.style.transition = 'transform 0.25s cubic-bezier(0.2, 1, 0.3, 1)';
+                    });
+                }
+            });
+            // --- FLIP END ---
+        }
+    }
+}
+
+function endDrag() {
+    isDragging = false;
+
+    // Remove Ghost
+    if (ghostItem) ghostItem.remove();
+    ghostItem = null;
+
+    // Clean up transitions on all items
+    const lis = habitList.querySelectorAll('.habit-item');
+    lis.forEach(li => {
+        li.style.transform = '';
+        li.style.transition = '';
+    });
+
+    // Place Item
+    if (draggedItem && placeholder) {
+        draggedItem.style.display = 'flex';
+        habitList.insertBefore(draggedItem, placeholder);
+        placeholder.remove();
+        placeholder = null;
+
+        // Update Data Model
+        updateOrder();
+    }
+}
+
+function updateOrder() {
+    const newIdOrder = [];
+    const lis = habitList.querySelectorAll('.habit-item');
+
+    lis.forEach(li => {
+        // filter out local tasks which don't have dataset.id
+        if (li.dataset.id) {
+            newIdOrder.push(li.dataset.id);
+        }
+    });
+
+    // Reorder 'habits' based on newIdOrder
+    const newHabits = [];
+    newIdOrder.forEach(id => {
+        const habit = habits.find(h => h.id === id);
+        if (habit) newHabits.push(habit);
+    });
+
+    habits = newHabits;
+    saveData();
+    // No need to re-render list, DOM is already correct
+}
+
+
 // --- Modal Functions ---
 function openModal() {
     if (isDatePast(selectedDate)) {
@@ -279,7 +526,7 @@ function closeModal() {
 }
 
 function addItem() {
-    if (isDatePast(selectedDate)) return; 
+    if (isDatePast(selectedDate)) return;
 
     const habitText = modalHabitInput.value.trim();
     const taskText = modalTaskInput.value.trim();
@@ -289,7 +536,7 @@ function addItem() {
 
     // Add Global Habit
     if (habitText) {
-        habits.push({ text: habitText });
+        habits.push({ id: generateId(), text: habitText });
         changeMade = true;
     }
 
@@ -318,29 +565,29 @@ modalTaskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addI
 
 // --- Toggle & Delete Functions ---
 
-window.toggleGlobalHabit = function(index) {
-    if (isDatePast(selectedDate)) return; 
+window.toggleGlobalHabit = function (id) {
+    if (isDatePast(selectedDate)) return;
 
     const dateKey = selectedDate.toDateString();
     if (!completions[dateKey]) completions[dateKey] = [];
-    
-    const i = completions[dateKey].indexOf(index);
+
+    const i = completions[dateKey].indexOf(id);
     if (i > -1) completions[dateKey].splice(i, 1);
-    else completions[dateKey].push(index);
+    else completions[dateKey].push(id);
 
     saveData();
-    renderList(); 
+    renderList();
     updateDailyProgress();
     renderCalendar();
 }
 
-window.deleteGlobalHabit = function(index) {
+window.deleteGlobalHabit = function (id) {
     if (isDatePast(selectedDate)) return;
 
-    if(confirm("Delete this Global Habit? (Removes from all days)")) {
-        habits.splice(index, 1);
+    if (confirm("Delete this Global Habit? (Removes from all days)")) {
+        habits = habits.filter(h => h.id !== id);
         for (const date in completions) {
-            completions[date] = completions[date].filter(i => i !== index).map(i => i > index ? i - 1 : i);
+            completions[date] = completions[date].filter(i => i !== id);
         }
         saveData();
         renderList();
@@ -349,8 +596,8 @@ window.deleteGlobalHabit = function(index) {
     }
 }
 
-window.toggleLocalTask = function(index) {
-    if (isDatePast(selectedDate)) return; 
+window.toggleLocalTask = function (index) {
+    if (isDatePast(selectedDate)) return;
 
     const dateKey = selectedDate.toDateString();
     if (localTasks[dateKey] && localTasks[dateKey][index]) {
@@ -362,14 +609,14 @@ window.toggleLocalTask = function(index) {
     }
 }
 
-window.deleteLocalTask = function(index) {
+window.deleteLocalTask = function (index) {
     if (isDatePast(selectedDate)) return;
 
-    if(confirm("Delete this Task?")) {
+    if (confirm("Delete this Task?")) {
         const dateKey = selectedDate.toDateString();
         localTasks[dateKey].splice(index, 1);
         if (localTasks[dateKey].length === 0) delete localTasks[dateKey];
-        
+
         saveData();
         renderList();
         updateDailyProgress();
@@ -380,10 +627,10 @@ window.deleteLocalTask = function(index) {
 // --- 4. Daily Progress Logic ---
 function updateDailyProgress() {
     const dateKey = selectedDate.toDateString();
-    
+
     const totalHabits = habits.length;
     const completedHabits = completions[dateKey] ? completions[dateKey].length : 0;
-    
+
     const daysTasks = localTasks[dateKey] || [];
     const totalTasks = daysTasks.length;
     const completedTasks = daysTasks.filter(t => t.completed).length;
@@ -399,8 +646,8 @@ function updateDailyProgress() {
     }
 
     const percentage = Math.round((grandCompleted / grandTotal) * 100);
-    const degrees = percentage * 3.6; 
-    
+    const degrees = percentage * 3.6;
+
     progressCircle.style.setProperty('--progress-deg', `${degrees}deg`);
     progressText.innerText = `${percentage}%`;
     fractionText.innerText = `${grandCompleted}/${grandTotal}`;
