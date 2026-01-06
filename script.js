@@ -160,7 +160,11 @@ function renderCalendar() {
         const dateKey = thisDate.toDateString();
 
         // Calculate Stats
-        const totalHabits = habits.length;
+        const validHabits = habits.filter(h => {
+             if (!h.createdAt) return true;
+             return thisDate >= new Date(h.createdAt);
+        });
+        const totalHabits = validHabits.length;
         const completedHabits = completions[dateKey] ? completions[dateKey].length : 0;
         const daysTasks = localTasks[dateKey] || [];
         const totalTasks = daysTasks.length;
@@ -232,6 +236,17 @@ function renderList() {
 
     // 1. Render Global Habits
     habits.forEach((habit) => {
+        // Filter by start date
+        if (habit.createdAt) {
+            const habitStartDate = new Date(habit.createdAt);
+            // reset time to midnight for accurate comparison
+            const currentDay = new Date(selectedDate);
+            currentDay.setHours(0,0,0,0);
+            habitStartDate.setHours(0,0,0,0);
+            
+            if (currentDay < habitStartDate) return;
+        }
+
         const li = document.createElement('li');
         li.classList.add('habit-item');
         li.dataset.id = habit.id; // For Drag & Drop identifying
@@ -543,7 +558,14 @@ function addItem() {
 
     // Add Global Habit
     if (habitText) {
-        habits.push({ id: generateId(), text: habitText });
+        const d = new Date(selectedDate);
+        d.setHours(0, 0, 0, 0);
+        
+        habits.push({ 
+            id: generateId(), 
+            text: habitText,
+            createdAt: d.toISOString() 
+        });
         changeMade = true;
     }
 
@@ -635,12 +657,23 @@ window.deleteLocalTask = function (index) {
 function updateDailyProgress() {
     const dateKey = selectedDate.toDateString();
 
-    const totalHabits = habits.length;
-
     // FIX: Only count completions for habits that actually exist
-    // This prevents stale IDs (from deletions/migrations) from counting towards progress
-    const validHabitIds = new Set(habits.map(h => h.id));
+    // AND are valid for this date
+    const currentDay = new Date(selectedDate);
+    currentDay.setHours(0,0,0,0);
+
+    const validHabits = habits.filter(h => {
+        if (!h.createdAt) return true;
+        const hDate = new Date(h.createdAt);
+        hDate.setHours(0,0,0,0); // Ensure midnight comparison
+        return currentDay >= hDate;
+    });
+
+    const validHabitIds = new Set(validHabits.map(h => h.id));
     const completedHabits = (completions[dateKey] || []).filter(id => validHabitIds.has(id)).length;
+    
+    // Update total based on valid habits for this day, not all global habits
+    const totalHabits = validHabits.length;
 
     const daysTasks = localTasks[dateKey] || [];
     const totalTasks = daysTasks.length;
