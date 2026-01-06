@@ -154,6 +154,10 @@
     box-sizing: border-box;
 }
 
+html {
+    background-color: var(--bg-body);
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--bg-body);
