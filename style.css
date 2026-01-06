@@ -183,6 +183,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    position: relative;
+    /* For absolute positioning of settings button */
 }
 
 /* --- TOP BAR --- */
@@ -805,9 +807,9 @@ h3 {
 
 /* --- SETTINGS BUTTON --- */
 .settings-float-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
+    position: absolute;
+    top: 60px;
+    right: 0;
     background: rgba(21, 21, 21, 0.8);
     border: 1px solid #333;
     color: var(--text-gray);
@@ -840,6 +842,7 @@ h3 {
     border: none;
     text-shadow: none;
 }
+
 /* --- CALENDAR INTERACTION STATES --- */
 
 /* 1. PAST MODE: Completely Locked */
@@ -853,14 +856,16 @@ h3 {
 /* We target the ID (#) instead of the class (.) */
 #schedule-card.future-mode .custom-checkbox {
     opacity: 0.3;
-    pointer-events: none; /* Disables clicking via CSS */
+    pointer-events: none;
+    /* Disables clicking via CSS */
     border-color: #333;
     background-color: #222;
     cursor: not-allowed;
 }
 
 #schedule-card.future-mode .delete-btn {
-    display: none; /* Hide delete button */
+    display: none;
+    /* Hide delete button */
 }
 
 #schedule-card.future-mode .habit-item {
@@ -868,7 +873,10 @@ h3 {
 }
 
 /* 3. Date Selection Visuals */
-.date { cursor: pointer; }
+.date {
+    cursor: pointer;
+}
+
 .date.selected {
     border: 2px solid #00e676;
     color: white;
